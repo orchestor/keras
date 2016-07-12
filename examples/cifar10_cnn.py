@@ -25,7 +25,7 @@ nb_classes = 10
 nb_epoch = 200
 data_augmentation = True
 
-# input image dimensions
+# input image dimensions 
 img_rows, img_cols = 32, 32
 # the CIFAR10 images are RGB
 img_channels = 3
@@ -40,29 +40,41 @@ print(X_test.shape[0], 'test samples')
 Y_train = np_utils.to_categorical(y_train, nb_classes)
 Y_test = np_utils.to_categorical(y_test, nb_classes)
 
+
+# build a sequential model with 7 layers.
 model = Sequential()
 
+
+# will generate 32 feature map with 32*32 images
 model.add(Convolution2D(32, 3, 3, border_mode='same',
                         input_shape=(img_channels, img_rows, img_cols)))
+# activate the images
 model.add(Activation('relu'))
+
+# generate 32 feature map with 32*32 images
 model.add(Convolution2D(32, 3, 3))
 model.add(Activation('relu'))
-model.add(MaxPooling2D(pool_size=(2, 2)))
-model.add(Dropout(0.25))
+model.add(MaxPooling2D(pool_size=(2, 2))) # reduce the image size, 32 feature map with 16*16 images
+model.add(Dropout(0.25)) # prevent overfit
 
+# generate 64 feature map with 16*16 images
 model.add(Convolution2D(64, 3, 3, border_mode='same'))
 model.add(Activation('relu'))
+
+# generate 64 feature map with 16*16 images
 model.add(Convolution2D(64, 3, 3))
 model.add(Activation('relu'))
+
+# generate 64 feature map with 8*8 images
 model.add(MaxPooling2D(pool_size=(2, 2)))
 model.add(Dropout(0.25))
 
-model.add(Flatten())
-model.add(Dense(512))
+model.add(Flatten()) # convert 64*8*8 to 4096 neuron
+model.add(Dense(512)) # add a hidden layer of 512 neuron
 model.add(Activation('relu'))
-model.add(Dropout(0.5))
-model.add(Dense(nb_classes))
-model.add(Activation('softmax'))
+model.add(Dropout(0.5)) # reduct half size become 256 neurons
+model.add(Dense(nb_classes)) # add a output layer of 10 neurons
+model.add(Activation('softmax')) # classify the results
 
 # let's train the model using SGD + momentum (how original).
 sgd = SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)
